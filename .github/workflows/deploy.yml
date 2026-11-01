@@ -1,71 +1,37 @@
-name: Deploy WordPress Playground
-
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: github-pages
-  cancel-in-progress: true
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Playground
-        uses: actions/checkout@v4
-        with:
-          repository: WordPress/wordpress-playground
-          ref: trunk
-          submodules: recursive
-          fetch-depth: 1
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version-file: playground/.nvmrc
+          cache: npm
+          cache-dependency-path: playground/package-lock.json
+
+      - name: Restore Nx build cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('playground/package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            nx-${{ runner.os }}-${{ hashFiles('playground/package-lock.json') }}-
 
       - name: Install dependencies
-        run: npm install
+        working-directory: playground
+        run: npm ci
 
       - name: Build Playground
+        working-directory: playground
         run: npm run build:website
 
       - name: Prepare Accessibility Blueprint
         run: |
-          DIST="dist/packages/playground/wasm-wordpress-net"
-      
+          DIST="playground/dist/packages/playground/wasm-wordpress-net"
+
           mkdir -p "$DIST/blueprints"
-      
-          cp blueprints/accessibility.json \
+
+          cp config/blueprints/accessibility.json \
              "$DIST/blueprints/accessibility.json"
 
       - name: Set default Blueprint
         run: |
-          node scripts/set-default-blueprint.mjs \
-            dist/packages/playground/wasm-wordpress-net/index.html
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist/packages/playground/wasm-wordpress-net
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          node config/scripts/set-default-blueprint.mjs \
+            playground/dist/packages/playground/wasm-wordpress-net/index.html
