@@ -1,0 +1,31 @@
+
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "landingPage": "/",
+  "preferredVersions": {
+    "php": "8.3",
+    "wp": "latest"
+  },
+  "login": true,
+  "steps": [
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "accessibility-widget"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php require_once '/wordpress/wp-load.php'; update_option('cya11y_widget_settings', array('status' => array('mobile' => true, 'desktop' => true), 'iconId' => 'default', 'iconSize' => 48, 'label' => 'Accessibility widget', 'heading' => 'Accessibility menu', 'position' => array('mobile' => 'bottom-right', 'desktop' => 'bottom-right'), 'language' => array('default' => 'en', 'selected' => array()), 'primaryColor' => '#1863DC', 'keyboard' => array('enabled' => true, 'shortcut' => 'alt+a'), 'modules' => array('color' => array('darkContrast' => array('enabled' => true), 'lightContrast' => array('enabled' => true), 'highContrast' => array('enabled' => true), 'highSaturation' => array('enabled' => true), 'lowSaturation' => array('enabled' => true), 'monochrome' => array('enabled' => true)), 'content' => array('adjustFontSizing' => array('enabled' => true), 'highlightTitle' => array('enabled' => true), 'highlightLinks' => array('enabled' => true), 'dyslexicFont' => array('enabled' => true), 'letterSpacing' => array('enabled' => true), 'lineHeight' => array('enabled' => true), 'fontWeight' => array('enabled' => true), 'textAlign' => array('enabled' => true)), 'navigation' => array('readingGuide' => array('enabled' => true), 'pauseAnimations' => array('enabled' => true), 'bigCursor' => array('enabled' => true)), 'profiles' => array('enabled' => true), 'pageRead' => array('enabled' => true), 'muteSounds' => array('enabled' => true), 'statement' => array('enabled' => false, 'url' => '', 'displayInWidget' => false, 'generatedDate' => '', 'formData' => array('companyName' => '', 'businessEmail' => '', 'website' => '', 'wcagStandard' => 'WCAG 2.2 Level AA', 'conformanceStatus' => 'fully-conformant'))));"
+    },
+    {
+      "step": "login",
+      "username": "admin",
+      "password": "password"
+    }
+  ]
+}
