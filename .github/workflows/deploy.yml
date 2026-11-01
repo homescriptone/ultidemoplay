@@ -38,6 +38,20 @@ jobs:
       - name: Build Playground
         run: npm run build:website
 
+      - name: Prepare Accessibility Blueprint
+        run: |
+          DIST="dist/packages/playground/wasm-wordpress-net"
+      
+          mkdir -p "$DIST/blueprints"
+      
+          cp blueprints/accessibility.json \
+             "$DIST/blueprints/accessibility.json"
+
+      - name: Set default Blueprint
+        run: |
+          node scripts/set-default-blueprint.mjs \
+            dist/packages/playground/wasm-wordpress-net/index.html
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
